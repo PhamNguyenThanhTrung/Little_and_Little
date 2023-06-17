@@ -1,0 +1,244 @@
+<header class="fixed-top">
+    <div class="row d-flex align-items-center h-100 text-center">
+        <div class="col">
+            <a href="{{ url('/HomePage') }}"><img src="{{asset('storage/app/public/assets/images/Little & Little Logo.png')}}" alt="" class="logo"></a>
+        </div>
+        <div class="col">
+            <div class="row">
+                <div class="col d-flex align-items-center justify-content-center">
+                    <a href="{{ url('/HomePage') }}">Trang chủ</a>
+                </div>
+                <div class="col d-flex align-items-center justify-content-center">
+                    <a href="{{ url('/EventPage') }}">Sự kiện</a>
+                </div>
+                <div class="col d-flex align-items-center justify-content-center">
+                    <a href="{{ url('/ContactPage') }}">Liên hệ</a>
+
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <a href="{{ url('/contact') }}" class="d-inline-flex align-items-center">
+                <div class="border border-2 d-flex align-content-between p-2 rounded-circle">
+                    <img   src="{{asset('storage/app/public/assets/images/Vector (Stroke).png')}}" alt="contact">
+
+                </div>
+                &ensp;012345678910
+            </a>
+        </div>
+    </div>
+</header>
+@if ($errors->any())
+<script>
+function sendEmail(event) {
+var shouldPreventDefault = false; // Cờ để kiểm soát việc chặn hành động mặc định
+@if ($errors->any())
+shouldPreventDefault = true; // Không chặn hành động mặc định nếu có lỗi
+@endif
+
+if (shouldPreventDefault) {
+event.preventDefault(); // Chặn hành động mặc định của form nếu cờ là true
+}
+
+$.ajax({
+url: event.target.action,
+type: 'POST',
+
+error: function() {
+$('#staticBackdrop4').modal('show'); // Hiển thị modal khi xảy ra lỗi
+}
+});
+}
+
+  </script>
+@endif
+
+
+
+
+
+<div class="text-center mt-3">
+    <button class="button-submit" type="submit">Thanh toán</button>
+</div>
+
+@if ($errors)
+    <script>
+        document.querySelector('.button-submit').addEventListener('click', function(event) {
+            event.preventDefault(); // Chặn hành động mặc định của form
+
+            var shouldShowPopup = true; // Cờ để kiểm soát việc hiển thị popup
+            setTimeout(function() {
+                if (shouldShowPopup) {
+                    $('#staticBackdrop4').modal('show'); // Hiển thị popup modal
+                }
+            });
+
+            $('#staticBackdrop4').on('hidden.bs.modal', function() {
+                // Load lại trang khi modal được đóng lại
+                window.location.reload();
+            });
+
+            // Thực hiện tải vé
+
+            return false;
+        });
+    </script>
+@endif
+</form>
+
+
+
+
+
+
+
+
+
+
+@extends('templates.teamplate')
+@section('homepage')
+    <main>
+        <div class="background">
+            <div class="successfulpaymentpage pt-5">
+                <img src="assets/images/successfulpaymentpage/Alvin_Arnold_Votay1 1.png" alt="" class="img">
+                <div class="title text-center mt-3">
+                    <h1>Thanh toán thành công</h1>
+                </div>
+                <div class="successfulpaymentpage-form-container">
+                    <div class="carousel-wrapper d-flex align-items-center">
+                        <button type="button" class="prev-btn button-3d ms-4">
+                            <img src="assets/images/icon/Arrow - Down 2.png" alt="">
+                        </button>
+                        <div class="carousel h-100">
+                            @foreach ($paymentPages as $paymentPage)
+                                @if ($paymentPage->id_book_tickets == $id)
+                                    @foreach (json_decode($paymentPage->qrCodePath) as $index => $qrCodePath)
+                                        <div class="item">
+                                            <div class="ticket">
+                                                @php
+                                                    $ticketCode = 'ALT00' . $qrCodePath;
+                                                    $qrCodeImagePath = asset('public/qrcodes/' . $qrCodePath . '.svg');
+                                                @endphp
+                                                <a href="{{ $qrCodeImagePath }}" download="{{ $ticketCode }}">
+                                                    <img src="{{ $qrCodeImagePath }}" alt="" class="qr">
+                                                </a>
+                                                <div class="ticket-code">{{ $qrCodeTexts[$index] }}</div>
+                                                {{-- Hiển thị giá trị QR code text --}}
+                                                <h1>VÉ CỔNG</h1>
+                                                <p>---</p>
+                                                <h4>Ngày sử dụng: {{ $paymentPage->Expiration_date }}</h4>
+                                                <img src="{{ asset('storage/app/public/assets/images/successfulpaymentpage/tick 1.png') }}"
+                                                    alt="" class="tick">
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                @endif
+                            @endforeach
+
+
+
+
+
+                        </div>
+                        <button type="button" class="next-btn button-3d me-4">
+                            <img src="assets/images/icon/Arrow - Down 2.png" alt="">
+                        </button>
+                    </div>
+                    <div class="container d-flex justify-content-between mt-4">
+                        @foreach ($paymentPages as $paymentPage)
+                            @if ($paymentPage->id_book_tickets == $id)
+                                @php
+                                    $quantity = $paymentPage->Quantity;
+                                @endphp
+                            @endif
+                        @endforeach
+                        <h1 class="ticket-count">Số lượng: {{ $quantity }} vé</h1>
+                        <h1 class="current-page">Trang 1</h1>
+                    </div>
+
+
+                </div>
+                <div class="download-email-buttons">
+                    <a href="{{ route('download.qrcodes', ['id' => $id]) }}" class="button-submit button_xn"
+                        onclick="return confirmDownload(event)">Tải vé</a>
+
+                    <!-- Trong file blade template -->
+                    <a href="{{ route('sendEmail.qrcodes', ['id' => $id]) }}" class="button-submit button_xn"
+                        onclick="return sendEmail(event)">
+                        Gửi email
+                    </a>
+
+
+
+                </div>
+            </div>
+
+            <div class="modal fade" id="staticBackdrop" tabindex="-1" aria-labelledby="staticBackdropLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <h1>Tải thành công</h1>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="staticBackdrop1" tabindex="-1" aria-labelledby="staticBackdropLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <h1>Gửi mail thành công</h1>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="staticBackdrop2" tabindex="-1" aria-labelledby="staticBackdropLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <h1>gmail hoặc email không chính xác</h1>
+                        </div>
+                        <div class="modal-footer">
+                            {{-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button> --}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </main>
+@endsection
+
+
+
+public function sendEmail(Request $request, $id)
+{
+    // Lấy thông tin thanh toán từ payment_pages
+    $paymentPages = payment_pages::where('id_book_tickets', $id)->first();
+    $qrCodesString = implode(', ', $paymentPages->qrCode);
+    // Kiểm tra xem có bản ghi tồn tại hay không
+    if (!$paymentPages) {
+        return response()->json(['error' => 'Dữ liệu payment_pages không tồn tại'], 404);
+    }
+
+    // Đính kèm các mã QR vào email
+    $qrCodePaths = json_decode($paymentPages->qrCodePath, true);
+
+    // Gửi email chứa mã QR
+    Mail::send('sendmail', compact('qrCodePaths', 'qrCodesString'), function ($message) use ($paymentPages, $qrCodePaths) {
+        $message->to($paymentPages->Email)->subject('Mã QR Code');
+
+        foreach ($qrCodePaths as $qrCodePath) {
+            $message->attach(public_path('qrcodes/' . $qrCodePath . '.svg'));
+        }
+    });
+    $paymentPages = payment_pages::all();
+
+    return response()->json(['success' => 'Email đã được gửi thành công']);
+}

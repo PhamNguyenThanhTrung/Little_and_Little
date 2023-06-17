@@ -1,0 +1,30 @@
+.modal-body {
+    background-color: orange; /* Màu nền cam */
+    border-radius: 10px 10px 0 0; /* Bo tròn 2 góc trên */
+}
+
+.img {
+    width: 30%; /* Kích thước ảnh sau khi nhỏ lại gấp 5 lần */
+    position: absolute;
+    top: -127%; /* Hiển thị ảnh 1/2 lên trên */
+    left: 50%;
+    transform: translateX(-50%);
+}
+.modal-content, .modal-dialog {
+    border-radius: 10px; /* Thiết lập bo tròn cho popup */
+}
+.modal-footer p {
+    padding-left: 5%; /* Khoảng cách bên trái */
+    padding-right: 10%; /* Khoảng cách bên trái */
+}
+.orange-text {
+    color: orange;
+    /* Thay đổi màu chữ thành màu cam */
+    font-size: 125%;
+    /* Thay đổi kích thước chữ theo ý muốn */
+
+    font-weight: bold;
+    /* Làm in đậm cho chữ "Lorem Ipsum" */
+
+
+}
